@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#1a0a3e" />
+<meta name="description" content="Hero Math Academy — superhero math adventures for 2nd graders" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='12' width='64' height='64' fill='%23ffd166'/%3E%3Ctext y='46' x='10' font-size='40'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E" />
+<title>Hero Math Academy</title>
+<style>
+:root {
+  --bg: #12082a;
+  --bg2: #1e1045;
+  --panel: #2a1858;
+  --panel2: #3a2270;
+  --ink: #fff8ee;
+  --muted: #c9b8ef;
+  --accent: #ff4d8d;
+  --accent2: #ffd166;
+  --good: #3ddc97;
+  --bad: #ff6b6b;
+  --sky: #5b8cff;
+  --comic: #ff3b3b;
+  --shadow: 0 8px 0 rgba(0,0,0,.35);
+  --radius: 18px;
+  --hero: #5b8cff;
+  --font: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: var(--font);
+  background: radial-gradient(1200px 800px at 20% -10%, #3a1d7a, transparent),
+              radial-gradient(900px 600px at 100% 0%, #6b1d5c, transparent),
+              linear-gradient(180deg, #12082a, #0a0518 70%);
+  color: var(--ink);
+  overflow-x: hidden;
+  min-height: 100%;
+}
+button, input { font-family: inherit; }
+button {
+  cursor: pointer;
+  border: 3px solid #111;
+  border-radius: 14px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  box-shadow: var(--shadow);
+  transition: transform .08s ease, filter .15s;
+  color: #111;
+}
+button:active { transform: translateY(4px); box-shadow: 0 3px 0 rgba(0,0,0,.35); }
+button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.btn-lg { padding: 14px 22px; font-size: 1.15rem; }
+.btn-md { padding: 12px 18px; font-size: 1rem; }
+.btn-sm { padding: 8px 12px; font-size: .9rem; }
+.btn-yellow { background: linear-gradient(#ffe08a,#ffc107); }
+.btn-pink { background: linear-gradient(#ff8ab8,#ff4d8d); color:#fff; border-color:#4a0a2a; }
+.btn-blue { background: linear-gradient(#8ec5ff,#4d8dff); color:#fff; border-color:#0a1a4a; }
+.btn-green { background: linear-gradient(#8ef0c0,#3ddc97); }
+.btn-purple { background: linear-gradient(#d0a8ff,#9b5de5); color:#fff; border-color:#2a0a4a; }
+.btn-ghost { background: rgba(255,255,255,.12); color:#fff; border-color: rgba(255,255,255,.35); box-shadow:none; }
+.screen { display:none; min-height:100vh; padding:16px; max-width:920px; margin:0 auto; }
+.screen.active { display:block; animation: fadeIn .35s ease; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+@keyframes pop { 0%{transform:scale(.7)} 60%{transform:scale(1.08)} 100%{transform:scale(1)} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+@keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes confettiFall { to { transform: translateY(110vh) rotate(720deg); opacity:0; } }
+@keyframes damageFlash { 0%{filter:brightness(2)} 100%{filter:none} }
+.topbar {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  margin-bottom:14px; flex-wrap:wrap;
+}
+.brand {
+  display:flex; align-items:center; gap:10px; font-weight:900; font-size:1.25rem;
+  text-shadow: 2px 2px 0 #000;
+}
+.brand .logo {
+  width:44px; height:44px; border-radius:12px; border:3px solid #111;
+  background: linear-gradient(135deg,#ff4d8d,#ffd166); display:grid; place-items:center;
+  font-size:1.4rem; box-shadow: var(--shadow);
+}
+.hud {
+  display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+}
+.pill {
+  background: rgba(0,0,0,.35); border:2px solid rgba(255,255,255,.2);
+  border-radius:999px; padding:6px 12px; font-weight:800; font-size:.9rem;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.card {
+  background: linear-gradient(180deg, var(--panel2), var(--panel));
+  border: 4px solid #111; border-radius: var(--radius);
+  box-shadow: var(--shadow); padding:18px; margin-bottom:14px;
+}
+.card h1, .card h2, .card h3 { margin:0 0 10px; text-shadow: 2px 2px 0 #000; }
+.subtitle { color: var(--muted); margin:0 0 16px; line-height:1.4; }
+.hero-grid {
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(88px,1fr)); gap:10px; margin:14px 0;
+}
+.hero-opt {
+  aspect-ratio:1; border:4px solid #111; border-radius:16px; background:#1a0a3e;
+  display:grid; place-items:center; font-size:2.4rem; cursor:pointer;
+  box-shadow: 0 4px 0 #000; transition:.12s;
+}
+.hero-opt.selected { outline:4px solid var(--accent2); transform:scale(1.05); animation:pulse 1s infinite; }
+.color-row { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 16px; }
+.swatch {
+  width:36px; height:36px; border-radius:50%; border:3px solid #111; cursor:pointer;
+  box-shadow:0 3px 0 #000;
+}
+.swatch.selected { outline:3px solid #fff; outline-offset:2px; }
+input[type=text] {
+  width:100%; padding:14px 16px; font-size:1.2rem; font-weight:800;
+  border-radius:14px; border:3px solid #111; background:#fff8ee; color:#111;
+}
+.map-grid {
+  display:grid; grid-template-columns:1fr; gap:12px;
+}
+@media(min-width:640px){ .map-grid { grid-template-columns:1fr 1fr; } }
+.mission {
+  display:flex; gap:12px; align-items:center; text-align:left;
+  padding:14px; border-radius:16px; border:4px solid #111; background:#24124f;
+  box-shadow:0 6px 0 #000; cursor:pointer; color:inherit; width:100%;
+}
+.mission.locked { opacity:.55; filter:grayscale(.4); cursor:not-allowed; }
+.mission .icon {
+  width:64px; height:64px; border-radius:16px; border:3px solid #111;
+  display:grid; place-items:center; font-size:1.8rem; flex-shrink:0;
+  background: linear-gradient(135deg,#5b8cff,#9b5de5);
+}
+.mission .meta { flex:1; min-width:0; }
+.mission .meta strong { display:block; font-size:1.05rem; }
+.mission .meta span { color:var(--muted); font-size:.88rem; }
+.stars { color:#ffd166; letter-spacing:2px; }
+.battle-wrap { position:relative; }
+.arena {
+  display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:end;
+  margin-bottom:12px;
+}
+.fighter {
+  text-align:center; padding:10px; border-radius:16px; border:3px solid #111;
+  background: rgba(0,0,0,.25);
+}
+.fighter .avatar { font-size:3.2rem; animation:floaty 2.4s ease-in-out infinite; }
+.fighter .name { font-weight:900; margin-top:4px; }
+.hpbar {
+  height:16px; background:#2a0a1a; border:2px solid #111; border-radius:999px; overflow:hidden; margin-top:6px;
+}
+.hpbar > i { display:block; height:100%; background:linear-gradient(90deg,#ff6b6b,#ffd166); width:100%; transition:width .35s ease; }
+.vs {
+  font-weight:900; font-size:1.4rem; color:#ffd166; text-shadow:2px 2px 0 #000;
+  padding-bottom:28px;
+}
+.question-box {
+  background:#fff8ee; color:#1a0a2a; border:4px solid #111; border-radius:18px;
+  padding:18px; margin:12px 0; box-shadow: var(--shadow);
+}
+.question-box .qtext { font-size:1.35rem; font-weight:900; line-height:1.35; margin-bottom:12px; }
+.choices {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+}
+@media(max-width:480px){ .choices { grid-template-columns:1fr; } }
+.choice {
+  padding:16px; font-size:1.35rem; font-weight:900; background:linear-gradient(#fff,#ffe8b8);
+  border:3px solid #111; border-radius:14px; box-shadow:0 5px 0 #000;
+}
+.choice.correct { background:linear-gradient(#b8ffd8,#3ddc97); }
+.choice.wrong { background:linear-gradient(#ffc0c0,#ff6b6b); animation:shake .3s; }
+.numpad {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px; max-width:280px; margin:0 auto;
+}
+.numpad button { padding:14px; font-size:1.4rem; background:#fff; }
+.answer-display {
+  font-size:2rem; font-weight:900; text-align:center; background:#fff; border:3px solid #111;
+  border-radius:12px; padding:10px; margin-bottom:10px; min-height:56px; color:#111;
+}
+.blocks {
+  display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:10px 0;
+}
+.block-h { width:54px; height:54px; background:#ff6b6b; border:2px solid #111; border-radius:6px; display:grid; place-items:center; font-weight:900; font-size:.7rem; color:#fff; }
+.block-t { width:28px; height:54px; background:#5b8cff; border:2px solid #111; border-radius:4px; }
+.block-o { width:18px; height:18px; background:#3ddc97; border:2px solid #111; border-radius:3px; }
+.clock {
+  width:180px; height:180px; margin:10px auto; border-radius:50%; border:6px solid #111;
+  background:#fff; position:relative; box-shadow: inset 0 0 0 4px #eee;
+}
+.clock .hand { position:absolute; left:50%; bottom:50%; transform-origin:bottom center; background:#111; border-radius:4px; }
+.clock .hour { width:6px; height:45px; margin-left:-3px; }
+.clock .minute { width:4px; height:65px; margin-left:-2px; background:#ff4d8d; }
+.clock .center { position:absolute; left:50%; top:50%; width:12px; height:12px; margin:-6px 0 0 -6px; background:#111; border-radius:50%; }
+.coins { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:10px 0; }
+.coin {
+  width:54px; height:54px; border-radius:50%; border:3px solid #111; display:grid; place-items:center;
+  font-weight:900; font-size:.85rem; box-shadow:0 3px 0 #000;
+}
+.coin.p { background:#c0c0c0; } .coin.n { background:#d4a017; } .coin.d { background:#c0c0c0; } .coin.q { background:#e8e8e8; }
+.shapes { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:12px 0; }
+.shape { width:64px; height:64px; border:3px solid #111; }
+.shape.sq { background:#5b8cff; } .shape.rect { width:96px; background:#ff4d8d; }
+.shape.tri { width:0; height:0; border: none; border-left:32px solid transparent; border-right:32px solid transparent; border-bottom:56px solid #3ddc97; background:transparent; }
+.array { display:inline-grid; gap:6px; margin:8px auto; }
+.array .dot { width:22px; height:22px; border-radius:50%; background:#ff4d8d; border:2px solid #111; }
+.powerups { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+.power {
+  padding:8px 12px; border-radius:999px; border:2px solid #111; background:#ffd166; font-weight:900; font-size:.85rem;
+  color:#111; box-shadow:0 3px 0 #000;
+}
+.power:disabled { filter:grayscale(1); }
+.feedback {
+  min-height:28px; font-weight:900; text-align:center; margin:8px 0; font-size:1.05rem;
+}
+.feedback.good { color:#3ddc97; } .feedback.bad { color:#ff9aa2; }
+.progress-track {
+  height:12px; background:rgba(0,0,0,.35); border:2px solid #111; border-radius:999px; overflow:hidden; margin:8px 0 14px;
+}
+.progress-track > i { display:block; height:100%; background:linear-gradient(90deg,#5b8cff,#3ddc97); width:0; transition:width .3s; }
+.lesson-visual {
+  background:#fff8ee; color:#1a0a2a; border:3px solid #111; border-radius:16px; padding:14px; margin:12px 0;
+  font-weight:700; line-height:1.45;
+}
+.badge-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px;
+}
+.badge {
+  text-align:center; padding:12px; border:3px solid #111; border-radius:14px; background:#24124f;
+}
+.badge.locked { opacity:.4; filter:grayscale(1); }
+.badge .ico { font-size:2rem; }
+.badge .lbl { font-size:.8rem; font-weight:800; margin-top:6px; }
+.parent-gate {
+  display:flex; flex-direction:column; gap:10px; align-items:center; padding:20px;
+}
+.stat-row {
+  display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.1);
+  font-weight:700;
+}
+.overlay {
+  position:fixed; inset:0; background:rgba(10,5,24,.72); display:none; align-items:center; justify-content:center;
+  z-index:50; padding:16px;
+}
+.overlay.show { display:flex; }
+.modal {
+  background:linear-gradient(180deg,#3a2270,#2a1858); border:4px solid #111; border-radius:20px;
+  padding:22px; max-width:420px; width:100%; text-align:center; box-shadow:var(--shadow);
+  animation:pop .35s ease;
+}
+.modal h2 { margin:0 0 8px; text-shadow:2px 2px 0 #000; }
+.confetti-piece {
+  position:fixed; top:-20px; width:10px; height:16px; z-index:100; pointer-events:none;
+  animation: confettiFall 2.2s linear forwards;
+}
+.footer-note { text-align:center; color:var(--muted); font-size:.8rem; margin-top:18px; }
+.tap-num {
+  display:inline-grid; place-items:center; min-width:56px; min-height:56px; margin:4px; padding:8px 12px;
+  font-size:1.4rem; font-weight:900; background:#fff; border:3px solid #111; border-radius:12px; color:#111;
+  box-shadow:0 4px 0 #000;
+}
+.tap-num.picked { background:#3ddc97; }
+.row-btns { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:12px; }
+.city-banner {
+  background: linear-gradient(90deg,#ff4d8d,#ffd166,#5b8cff);
+  color:#111; font-weight:900; text-align:center; padding:10px; border:3px solid #111;
+  border-radius:14px; margin-bottom:14px; box-shadow:0 5px 0 #000;
+}
+#toast {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#111; color:#fff;
+  padding:10px 16px; border-radius:999px; border:2px solid #ffd166; font-weight:800; z-index:80;
+  display:none;
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="overlay" class="overlay"></div>
+<div id="toast"></div>
+<script>
+(function(){
+"use strict";
+const $ = (sel, el=document) => el.querySelector(sel);
+const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
+const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+const rand = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick = arr => arr[rand(0,arr.length-1)];
+const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=rand(0,i);[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+const AVATARS = ["🦸","🦹","🦊","🐯","🐉","⚡","🌟","🛡️","🚀","🧙","🤖","🦇"];
+const COLORS = ["#5b8cff","#ff4d8d","#3ddc97","#ffd166","#9b5de5","#ff8c42","#00d4ff","#ff3b3b"];
+const VILLAINS = [
+  {name:"Dr. Divide", emoji:"🧪", color:"#9b5de5"},
+  {name:"Count Crumble", emoji:"🧛", color:"#ff4d8d"},
+  {name:"Hexa Haunt", emoji:"👻", color:"#5b8cff"},
+  {name:"Coin Goblin", emoji:"👺", color:"#3ddc97"},
+  {name:"Time Twister", emoji:"🕰️", color:"#ffd166"},
+  {name:"Block Bandit", emoji:"🥷", color:"#ff8c42"},
+  {name:"Skip Snatcher", emoji:"🕷️", color:"#00d4ff"},
+  {name:"Shape Shadow", emoji:"🌑", color:"#c0c0c0"},
+  {name:"Word Wrecker", emoji:"📚", color:"#ff6b6b"},
+  {name:"Mega Menace", emoji:"👾", color:"#ff3b3b"}
+];
+
+const BADGES = [
+  {id:"first_star", name:"First Star", emoji:"⭐", desc:"Earn your first star"},
+  {id:"combo5", name:"Combo Cadet", emoji:"🔥", desc:"Get a 5-answer streak"},
+  {id:"combo10", name:"Streak Superstar", emoji:"💥", desc:"Get a 10-answer streak"},
+  {id:"mission3", name:"City Helper", emoji:"🏙️", desc:"Complete 3 missions"},
+  {id:"all_missions", name:"City Saver", emoji:"🏆", desc:"Complete every mission"},
+  {id:"boss", name:"Boss Buster", emoji:"👊", desc:"Defeat a boss"},
+  {id:"perfect", name:"Perfect Power", emoji:"💎", desc:"Finish a mission with no misses"},
+  {id:"money", name:"Coin Champ", emoji:"🪙", desc:"Beat the money mission"},
+  {id:"time", name:"Clock Hero", emoji:"⏰", desc:"Beat the time mission"},
+  {id:"place", name:"Place Value Pro", emoji:"🧱", desc:"Beat place value"},
+  {id:"level5", name:"Level 5 Hero", emoji:"🎖️", desc:"Reach level 5"},
+  {id:"parent", name:"Team Effort", emoji:"👨‍👦", desc:"Open the Parent Corner"}
+];
+
+const MISSIONS = [
+  {id:"add20", title:"Power Punch Facts", skill:"Addition within 20", emoji:"🥊", color:"#ff4d8d",
+   lesson:"When numbers make 10, they're best friends! 7+3=10. Use that to add faster: 8+5 = 8+2+3 = 10+3 = 13.",
+   type:"add20", qs:8, boss:false, unlock:0},
+  {id:"addsub100", title:"Bridge Battle", skill:"Add & subtract within 100", emoji:"🌉", color:"#5b8cff",
+   lesson:"Regrouping: if ones add to 10 or more, make a new ten! 28+15: 8+5=13 → write 3, carry 1 ten. Tens: 2+1+1=4 → 43.",
+   type:"addsub100", qs:8, boss:false, unlock:1},
+  {id:"placevalue", title:"Block Fortress", skill:"Place value (H/T/O)", emoji:"🧱", color:"#ff8c42",
+   lesson:"Hundreds · Tens · Ones. 347 means 3 hundreds (300), 4 tens (40), and 7 ones. Blocks help you see it!",
+   type:"placevalue", qs:7, boss:false, unlock:2},
+  {id:"skipcount", title:"Skip Count Sprint", skill:"Skip counting 2s/5s/10s/100s", emoji:"🏃", color:"#3ddc97",
+   lesson:"Skip counting is jumping on a number line. By 5s: 5,10,15,20… By 10s: 10,20,30… Superheroes love patterns!",
+   type:"skipcount", qs:8, boss:false, unlock:3},
+  {id:"compare", title:"Compare Clash", skill:"Compare numbers < > =", emoji:"⚖️", color:"#9b5de5",
+   lesson:"The hungry alligator eats the bigger number! 45 > 32. Same numbers get equals: 70 = 70.",
+   type:"compare", qs:8, boss:false, unlock:4},
+  {id:"time", title:"Time Tower", skill:"Tell time to 5 minutes", emoji:"⏰", color:"#ffd166",
+   lesson:"The short hand is hours. The long hand is minutes. Each number on the clock is 5 minutes: 1→5, 2→10, 3→15…",
+   type:"time", qs:7, boss:false, unlock:5},
+  {id:"money", title:"Coin Crusade", skill:"Count money (coins)", emoji:"🪙", color:"#c0c0c0",
+   lesson:"Penny=1¢ · Nickel=5¢ · Dime=10¢ · Quarter=25¢. Count the biggest coins first!",
+   type:"money", qs:7, boss:false, unlock:6},
+  {id:"word", title:"Story Quest", skill:"Word problems", emoji:"📖", color:"#00d4ff",
+   lesson:"Find the question. Circle the numbers. Decide: put together (+) or take away (−)? Then solve!",
+   type:"word", qs:6, boss:false, unlock:7},
+  {id:"arrays", title:"Array Arena", skill:"Shapes & arrays (× intro)", emoji:"🔷", color:"#ff3b3b",
+   lesson:"An array is rows and columns of equal groups. 3 rows of 4 = 3×4 = 12. Multiplication is fast adding!",
+   type:"arrays", qs:7, boss:false, unlock:8},
+  {id:"boss_final", title:"Mega Menace Boss", skill:"Boss Battle — mixed skills", emoji:"👾", color:"#ff3b3b",
+   lesson:"The Mega Menace mixes EVERY power! Stay calm, use hints, and trust your training. You've got this, hero!",
+   type:"boss", qs:12, boss:true, unlock:9}
+];
+
+const DEFAULT = {
+  name:"", avatar:"🦸", color:"#5b8cff",
+  xp:0, level:1, stars:0, badges:[],
+  missions:{}, // id -> {bestStars, attempts, correct, wrong, completed}
+  muted:false, speak:false, timerMode:false,
+  created:false
+};
+
+let state = load();
+let audioCtx = null;
+let game = null; // active mission state
+
+function load(){
+  try {
+    const raw = localStorage.getItem("heroMathAcademy_v1");
+    if(!raw) return structuredClone(DEFAULT);
+    return Object.assign(structuredClone(DEFAULT), JSON.parse(raw));
+  } catch(e){ return structuredClone(DEFAULT); }
+}
+function save(){ localStorage.setItem("heroMathAcademy_v1", JSON.stringify(state)); }
+
+function xpForLevel(lv){ return lv*50; }
+function addXp(n){
+  state.xp += n;
+  while(state.xp >= xpForLevel(state.level)){
+    state.xp -= xpForLevel(state.level);
+    state.level++;
+    if(state.level>=5) unlockBadge("level5");
+    toast(`Level up! You're level ${state.level}!`);
+    sfx("level");
+  }
+  save();
+}
+function unlockBadge(id){
+  if(!state.badges.includes(id)){
+    state.badges.push(id);
+    save();
+    const b = BADGES.find(x=>x.id===id);
+    if(b) toast(`Badge unlocked: ${b.emoji} ${b.name}`);
+  }
+}
+function missionProgress(id){
+  if(!state.missions[id]) state.missions[id] = {bestStars:0, attempts:0, correct:0, wrong:0, completed:false};
+  return state.missions[id];
+}
+function completedCount(){
+  return MISSIONS.filter(m=>!m.boss && missionProgress(m.id).completed).length;
+}
+function isUnlocked(m){
+  if(m.unlock===0) return true;
+  if(m.boss) return completedCount() >= 9;
+  // unlock when previous mission completed OR enough missions done
+  const prev = MISSIONS[m.unlock-1];
+  return missionProgress(prev.id).completed || completedCount() >= m.unlock;
+}
+
+/* ---------- Audio ---------- */
+function ensureAudio(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==="suspended") audioCtx.resume();
+}
+function beep(freq, dur, type="square", vol=0.05){
+  if(state.muted) return;
+  try{
+    ensureAudio();
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.value=vol;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+dur);
+    o.stop(audioCtx.currentTime+dur);
+  }catch(e){}
+}
+function sfx(kind){
+  if(state.muted) return;
+  if(kind==="correct"){ beep(523,.08); setTimeout(()=>beep(784,.12),80); }
+  else if(kind==="wrong"){ beep(180,.2,"sawtooth",0.04); }
+  else if(kind==="click"){ beep(440,.04,"triangle",0.03); }
+  else if(kind==="power"){ beep(660,.08); setTimeout(()=>beep(880,.1),70); setTimeout(()=>beep(1100,.12),140); }
+  else if(kind==="level"){ [523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.1,"triangle",0.05),i*90)); }
+  else if(kind==="boss"){ beep(110,.3,"sawtooth",0.06); setTimeout(()=>beep(90,.4,"sawtooth",0.05),200); }
+  else if(kind==="win"){ [523,659,784,1046,1318].forEach((f,i)=>setTimeout(()=>beep(f,.12,"square",0.045),i*100)); }
+}
+
+function speak(text){
+  if(!state.speak || !window.speechSynthesis) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(text).replace(/[★⭐🔥💥]/g,""));
+    u.rate = 0.95; u.pitch = 1.05;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.style.display="block";
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display="none",2200);
+}
+
+function confetti(n=40){
+  const colors=["#ff4d8d","#ffd166","#5b8cff","#3ddc97","#9b5de5","#fff"];
+  for(let i=0;i<n;i++){
+    const el=document.createElement("div");
+    el.className="confetti-piece";
+    el.style.left = rand(0,100)+"vw";
+    el.style.background = pick(colors);
+    el.style.animationDuration = (1.5+Math.random()*1.5)+"s";
+    el.style.animationDelay = (Math.random()*0.3)+"s";
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),3200);
+  }
+}
+
+function showModal(html){
+  const ov=$("#overlay");
+  ov.innerHTML = `<div class="modal">${html}</div>`;
+  ov.classList.add("show");
+}
+function hideModal(){ $("#overlay").classList.remove("show"); $("#overlay").innerHTML=""; }
+
+/* ---------- Math generators ---------- */
+function genAdd20(diff){
+  // diff 0 easy, 1 normal, 2 hard
+  let a,b;
+  if(diff===0){ a=rand(1,9); b=rand(1,10-a); }
+  else if(diff===1){ a=rand(4,12); b=rand(3,20-a); }
+  else { a=rand(8,15); b=rand(5,20-a); }
+  const ans=a+b;
+  return {
+    kind:"mc",
+    prompt:`${a} + ${b} = ?`,
+    speak:`What is ${a} plus ${b}?`,
+    answer:ans,
+    choices: makeChoices(ans, 0, 20),
+    hint: hintAdd(a,b)
+  };
+}
+function hintAdd(a,b){
+  if(a+b<=10) return `Count on from ${a}: ${a}, then add ${b} more.`;
+  const need=10-a;
+  if(need>0 && b>=need) return `Make a 10: ${a}+${need}=10, then add the leftover ${b-need} → ${10+(b-need)}.`;
+  return `Start at ${a} and count up ${b} jumps.`;
+}
+function genAddSub100(diff){
+  const sub = Math.random()<0.45;
+  let a,b,ans;
+  if(!sub){
+    if(diff===0){ a=rand(10,40); b=rand(10,30); if((a%10)+(b%10)>=10 && Math.random()<0.5) b = b - ((a%10)+(b%10)-9); }
+    else if(diff===1){ a=rand(20,70); b=rand(15,40); }
+    else { a=rand(35,85); b=rand(15,99-a); }
+    ans=a+b;
+    return {kind:"pad", prompt:`${a} + ${b} = ?`, speak:`What is ${a} plus ${b}?`, answer:ans,
+      hint: ((a%10)+(b%10)>=10)
+        ? `Ones: ${a%10}+${b%10}=${(a%10)+(b%10)}. Regroup 1 ten. Tens: ${Math.floor(a/10)}+${Math.floor(b/10)}+1.`
+        : `Add ones, then tens. Ones: ${a%10}+${b%10}. Tens: ${Math.floor(a/10)}+${Math.floor(b/10)}.`,
+      visual:`<div style="font-size:1.1rem;text-align:center">${a}<br>+ ${b}<br>____</div>`};
+  } else {
+    if(diff===0){ a=rand(20,50); b=rand(1,a%10||5); }
+    else if(diff===1){ a=rand(30,80); b=rand(10,Math.min(40,a-1)); }
+    else { a=rand(40,99); b=rand(15,Math.min(55,a-1)); }
+    ans=a-b;
+    return {kind:"pad", prompt:`${a} − ${b} = ?`, speak:`What is ${a} minus ${b}?`, answer:ans,
+      hint: (a%10)<(b%10)
+        ? `Need to regroup! Borrow 1 ten from the tens place so ones can subtract.`
+        : `Subtract ones first (${a%10}−${b%10}), then tens (${Math.floor(a/10)}−${Math.floor(b/10)}).`};
+  }
+}
+function genPlaceValue(diff){
+  let n;
+  if(diff===0) n=rand(20,99);
+  else if(diff===1) n=rand(100,499);
+  else n=rand(200,899);
+  const h=Math.floor(n/100), t=Math.floor((n%100)/10), o=n%10;
+  const mode = pick(["blocks","which","expand","build"]);
+  if(mode==="build"){
+    return {
+      kind:"build",
+      prompt:`Build ${n} with blocks!`,
+      speak:`Build the number ${n} using hundreds, tens, and ones blocks.`,
+      answer:n,
+      hint:`${n} = ${h} hundreds, ${t} tens, ${o} ones. Tap +100 ${h} times, +10 ${t} times, +1 ${o} times.`
+    };
+  }
+  if(mode==="blocks" || mode==="expand"){
+    return {
+      kind:"pad",
+      prompt: mode==="expand" ? `What number is ${h?h+" hundreds + ":""}${t} tens + ${o} ones?` : `How many in all?`,
+      speak: mode==="expand" ? `What number is ${h?h+" hundreds, ":""}${t} tens, and ${o} ones?` : `Count the blocks. How many in all?`,
+      answer:n,
+      visual: renderBlocks(h,t,o),
+      hint:`Hundreds=${h*100}, Tens=${t*10}, Ones=${o}. Add them: ${n}.`
+    };
+  }
+  const ask = pick(["hundreds","tens","ones"]);
+  const ans = ask==="hundreds"?h:ask==="tens"?t:o;
+  return {
+    kind:"mc",
+    prompt:`In ${n}, how many ${ask}?`,
+    speak:`In the number ${n}, how many ${ask}?`,
+    answer:ans,
+    choices: makeChoices(ans,0,9),
+    visual: renderBlocks(h,t,o),
+    hint:`${n}: hundreds digit is ${h}, tens is ${t}, ones is ${o}.`
+  };
+}
+function renderBlocks(h,t,o){
+  let html='<div class="blocks">';
+  for(let i=0;i<h;i++) html+='<div class="block-h">100</div>';
+  for(let i=0;i<t;i++) html+='<div class="block-t"></div>';
+  for(let i=0;i<o;i++) html+='<div class="block-o"></div>';
+  html+='</div>';
+  return html;
+}
+function genSkipCount(diff){
+  const steps = diff===0 ? [2,5,10] : diff===1 ? [2,5,10,100] : [2,5,10,100];
+  const step = pick(steps);
+  let start;
+  if(step===100) start = rand(1,8)*100;
+  else if(step===10) start = rand(1,12)*10;
+  else if(step===5) start = rand(1,10)*5;
+  else start = rand(2,20)*2;
+  const seq=[start, start+step, start+2*step, start+3*step];
+  const blank = rand(1,3);
+  const ans = seq[blank];
+  const shown = seq.map((v,i)=> i===blank ? "□" : String(v));
+  return {
+    kind:"pad",
+    prompt:`Fill in the blank (count by ${step}s): ${shown.join(", ")}`,
+    speak:`Count by ${step}s. What number goes in the blank? ${shown.join(", ")}`,
+    answer:ans,
+    hint:`We're counting by ${step}s. After ${seq[blank-1]} comes ${seq[blank-1]+step}.`
+  };
+}
+function genCompare(diff){
+  let a,b;
+  if(diff===0){ a=rand(10,50); b=rand(10,50); }
+  else if(diff===1){ a=rand(50,200); b=rand(50,200); }
+  else { a=rand(100,900); b=rand(100,900); if(Math.random()<0.25) b=a; }
+  const ans = a>b ? ">" : a<b ? "<" : "=";
+  return {
+    kind:"compare",
+    prompt:`${a}  ?  ${b}`,
+    speak:`Compare ${a} and ${b}. Greater than, less than, or equal?`,
+    answer:ans,
+    hint: a===b ? `Same number → use =.` : `Look at hundreds, then tens, then ones. ${a>b?a:b} is bigger.`
+  };
+}
+function genTime(diff){
+  const hour = rand(1,12);
+  const minute = diff===0 ? pick([0,15,30,45]) : diff===1 ? rand(0,11)*5 : rand(0,11)*5;
+  const ansH = hour;
+  const ansM = minute;
+  // ask to pick the time from choices
+  const label = `${hour}:${String(minute).padStart(2,"0")}`;
+  const choices = new Set([label]);
+  while(choices.size<4){
+    const mh = rand(1,12);
+    const mm = rand(0,11)*5;
+    choices.add(`${mh}:${String(mm).padStart(2,"0")}`);
+  }
+  return {
+    kind:"mc",
+    prompt:`What time is shown?`,
+    speak:`What time is shown on the clock?`,
+    answer:label,
+    choices: shuffle([...choices]),
+    visual: renderClock(hour, minute),
+    hint:`Hour hand near ${hour}. Minute hand: each number is 5 minutes → ${minute} minutes.`
+  };
+}
+function renderClock(h,m){
+  const hAngle = ((h%12)+m/60)*30;
+  const mAngle = m*6;
+  return `<div class="clock" aria-hidden="true">
+    <div class="hand hour" style="transform:rotate(${hAngle}deg)"></div>
+    <div class="hand minute" style="transform:rotate(${mAngle}deg)"></div>
+    <div class="center"></div>
+  </div>`;
+}
+function genMoney(diff){
+  let coins;
+  if(diff===0){
+    const n=rand(2,4); coins=[];
+    for(let i=0;i<n;i++) coins.push(pick([1,5,10]));
+  } else if(diff===1){
+    const n=rand(3,5); coins=[];
+    for(let i=0;i<n;i++) coins.push(pick([1,5,10,25]));
+  } else {
+    coins = [25, pick([10,25]), pick([5,10]), pick([1,5,10])];
+  }
+  const ans = coins.reduce((s,c)=>s+c,0);
+  const labels={1:"P 1¢",5:"N 5¢",10:"D 10¢",25:"Q 25¢"};
+  const cls={1:"p",5:"n",10:"d",25:"q"};
+  const visual = `<div class="coins">${coins.map(c=>`<div class="coin ${cls[c]}">${labels[c]}</div>`).join("")}</div>`;
+  return {
+    kind:"pad",
+    prompt:`How many cents?`,
+    speak:`How many cents are these coins worth in all?`,
+    answer:ans,
+    visual,
+    hint:`Add: ${coins.join(" + ")} = ${ans}¢. Count quarters and dimes first!`
+  };
+}
+function genWord(diff){
+  const templates = [
+    ()=>{ const a=rand(5,diff?40:20); const b=rand(3,diff?30:15); return {t:`A hero rescued ${a} cats and then ${b} more dogs. How many pets in all?`, ans:a+b, hint:`Put together: ${a}+${b}=${a+b}.`}; },
+    ()=>{ const a=rand(15,diff?80:40); const b=rand(5,Math.min(a-1,diff?40:20)); return {t:`There were ${a} energy gems. A villain stole ${b}. How many are left?`, ans:a-b, hint:`Take away: ${a}−${b}=${a-b}.`}; },
+    ()=>{ const a=rand(4,12); const b=rand(3,10); return {t:`${a} heroes each carry ${b} shields. How many shields altogether? (Think: ${a} groups of ${b})`, ans:a*b, hint:`${a} groups of ${b} → add ${b} a total of ${a} times = ${a*b}.`}; },
+    ()=>{ const a=rand(20,60); const b=rand(10,30); const c=rand(5,20); return {t:`Mia had ${a} stickers. She got ${b} more, then gave ${c} away. How many now?`, ans:a+b-c, hint:`First ${a}+${b}=${a+b}, then subtract ${c} → ${a+b-c}.`}; }
+  ];
+  const g = pick(diff>=2 ? templates : templates.slice(0,3))();
+  return {kind:"pad", prompt:g.t, speak:g.t, answer:g.ans, hint:g.hint};
+}
+function genArrays(diff){
+  const rows = diff===0?rand(2,3):diff===1?rand(2,4):rand(3,5);
+  const cols = diff===0?rand(2,4):diff===1?rand(3,5):rand(3,6);
+  const ans = rows*cols;
+  let dots="";
+  for(let r=0;r<rows;r++){ for(let c=0;c<cols;c++) dots+='<div class="dot"></div>'; }
+  return {
+    kind:"pad",
+    prompt:`How many dots? (${rows} rows × ${cols} columns)`,
+    speak:`This array has ${rows} rows and ${cols} columns. How many dots in all?`,
+    answer:ans,
+    visual:`<div style="text-align:center"><div class="array" style="grid-template-columns:repeat(${cols},22px)">${dots}</div></div>`,
+    hint:`${rows} rows of ${cols} = ${rows}×${cols}=${ans}. Or count all the dots.`
+  };
+}
+function genBoss(diff){
+  const gens=[genAdd20,genAddSub100,genPlaceValue,genSkipCount,genCompare,genTime,genMoney,genWord,genArrays];
+  return pick(gens)(diff);
+}
+function makeChoices(ans, min, max){
+  const set=new Set([ans]);
+  while(set.size<4){
+    let n = ans + pick([-3,-2,-1,1,2,3,4,-4,5,-5]);
+    if(typeof ans==="number") n=clamp(n,min,max);
+    if(n!==ans) set.add(n);
+  }
+  return shuffle([...set]);
+}
+
+const GENERATORS = {
+  add20: genAdd20, addsub100: genAddSub100, placevalue: genPlaceValue,
+  skipcount: genSkipCount, compare: genCompare, time: genTime,
+  money: genMoney, word: genWord, arrays: genArrays, boss: genBoss
+};
+
+/* ---------- Rendering ---------- */
+function topHUD(extra=""){
+  const xpPct = Math.round((state.xp/xpForLevel(state.level))*100);
+  return `<div class="topbar">
+    <div class="brand"><div class="logo" style="background:linear-gradient(135deg,${state.color},#ffd166)">${state.avatar||"⚡"}</div>
+      <div>Hero Math Academy</div></div>
+    <div class="hud">
+      ${state.created?`<span class="pill">${state.avatar} ${escapeHtml(state.name||"Hero")}</span>
+      <span class="pill">⭐ ${state.stars}</span>
+      <span class="pill">Lv ${state.level} · ${xpPct}%</span>`:""}
+      <button class="btn-sm btn-ghost" id="btnMute" title="Mute">${state.muted?"🔇":"🔊"}</button>
+      <button class="btn-sm btn-ghost" id="btnSpeak" title="Read aloud">${state.speak?"🗣️":"😶"}</button>
+      ${extra}
+    </div>
+  </div>`;
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c])); }
+
+function bindChrome(){
+  $("#btnMute")?.addEventListener("click",()=>{ state.muted=!state.muted; save(); sfx("click"); render(); });
+  $("#btnSpeak")?.addEventListener("click",()=>{ state.speak=!state.speak; save(); sfx("click"); if(state.speak) speak("Read aloud is on"); render(); });
+}
+
+function render(){
+  if(!state.created) return renderCreate();
+  const app=$("#app");
+  // route via game flag
+  if(game && game.phase==="lesson") return renderLesson();
+  if(game && game.phase==="play") return renderPlay();
+  if(game && game.phase==="result") return renderResult();
+  if(game && game.phase==="badges") return renderBadges();
+  if(game && game.phase==="parent") return renderParent();
+  return renderMap();
+}
+
+function renderCreate(){
+  $("#app").innerHTML = `
+  <div class="screen active">
+    ${topHUD()}
+    <div class="card">
+      <h1>🦸 Create Your Hero!</h1>
+      <p class="subtitle">Pick a hero name and look. You'll save the city with math powers!</p>
+      <label style="font-weight:800">Hero Name</label>
+      <input type="text" id="heroName" maxlength="16" placeholder="e.g. Cap'n Add" value="${escapeHtml(state.name)}" />
+      <div style="font-weight:800;margin-top:14px">Avatar</div>
+      <div class="hero-grid" id="avatars">
+        ${AVATARS.map(a=>`<div class="hero-opt ${state.avatar===a?"selected":""}" data-a="${a}">${a}</div>`).join("")}
+      </div>
+      <div style="font-weight:800">Hero Color</div>
+      <div class="color-row" id="colors">
+        ${COLORS.map(c=>`<div class="swatch ${state.color===c?"selected":""}" data-c="${c}" style="background:${c}"></div>`).join("")}
+      </div>
+      <button class="btn-lg btn-yellow" id="btnStart" style="width:100%">Let's Go! 🚀</button>
+    </div>
+    <p class="footer-note">Original heroes only · Built for 2nd grade math fun</p>
+  </div>`;
+  bindChrome();
+  $$("#avatars .hero-opt").forEach(el=>el.addEventListener("click",()=>{
+    state.avatar=el.dataset.a; sfx("click");
+    $$("#avatars .hero-opt").forEach(x=>x.classList.toggle("selected",x.dataset.a===state.avatar));
+  }));
+  $$("#colors .swatch").forEach(el=>el.addEventListener("click",()=>{
+    state.color=el.dataset.c; sfx("click");
+    $$("#colors .swatch").forEach(x=>x.classList.toggle("selected",x.dataset.c===state.color));
+  }));
+  $("#btnStart").addEventListener("click",()=>{
+    const name=($("#heroName").value||"").trim()||"Hero";
+    state.name=name.slice(0,16); state.created=true; save(); sfx("win"); confetti(30);
+    showModal(`<h2>Welcome, ${escapeHtml(state.name)}!</h2><p>The city needs your math powers. Complete missions, earn stars, and defeat bosses!</p>
+      <button class="btn-lg btn-green" id="goMap">Enter the City</button>`);
+    $("#goMap").onclick=()=>{ hideModal(); render(); };
+  });
+}
+
+function renderMap(){
+  $("#app").innerHTML = `
+  <div class="screen active">
+    ${topHUD(`<button class="btn-sm btn-purple" id="btnBadges">🏆</button><button class="btn-sm btn-blue" id="btnParent">👨‍👦</button>`)}
+    <div class="city-banner">🌆 Super City Mission Map — Choose a quest!</div>
+    <div class="card" style="padding:12px 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+        <strong>${state.avatar} ${escapeHtml(state.name)} · Level ${state.level}</strong>
+        <label style="font-size:.9rem;display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="timerMode" ${state.timerMode?"checked":""}/> Timer mode
+        </label>
+      </div>
+      <div class="progress-track"><i style="width:${Math.round((completedCount()/9)*100)}%"></i></div>
+      <div style="color:var(--muted);font-size:.85rem">${completedCount()}/9 missions cleared · Defeat Mega Menace when ready!</div>
+    </div>
+    <div class="map-grid">
+      ${MISSIONS.map(m=>{
+        const prog=missionProgress(m.id);
+        const unlocked=isUnlocked(m);
+        const stars = "★".repeat(prog.bestStars)+"☆".repeat(3-prog.bestStars);
+        return `<button class="mission ${unlocked?"":"locked"}" data-id="${m.id}" ${unlocked?"":"disabled"}>
+          <div class="icon" style="background:linear-gradient(135deg,${m.color},#24124f)">${unlocked?m.emoji:"🔒"}</div>
+          <div class="meta">
+            <strong>${m.title}${m.boss?" ⚔️":""}</strong>
+            <span>${m.skill}</span>
+            <div class="stars">${unlocked?stars:"Complete earlier missions"}</div>
+          </div>
+        </button>`;
+      }).join("")}
+    </div>
+    <p class="footer-note">Tip: finish missions to unlock the next. Boss waits at the end!</p>
+  </div>`;
+  bindChrome();
+  $("#timerMode")?.addEventListener("change",e=>{ state.timerMode=e.target.checked; save(); });
+  $("#btnBadges")?.addEventListener("click",()=>{ sfx("click"); game={phase:"badges"}; render(); });
+  $("#btnParent")?.addEventListener("click",()=>{ sfx("click"); game={phase:"parent", gate:true}; render(); });
+  $$(".mission:not(.locked)").forEach(el=>el.addEventListener("click",()=>{
+    const m=MISSIONS.find(x=>x.id===el.dataset.id);
+    startMission(m);
+  }));
+}
+
+function startMission(m){
+  sfx(m.boss?"boss":"click");
+  game = {
+    phase:"lesson",
+    mission:m,
+    villain: m.boss ? VILLAINS[VILLAINS.length-1] : pick(VILLAINS.slice(0,-1)),
+    total:m.qs,
+    index:0,
+    correct:0,
+    wrong:0,
+    combo:0,
+    maxCombo:0,
+    diff:1,
+    villainHp:100,
+    powers:{hint:2, freeze:1, blast:1},
+    frozenUntil:0,
+    answered:false,
+    current:null,
+    timer:null,
+    timeLeft:0,
+    usedHint:false
+  };
+  render();
+}
+
+function renderLesson(){
+  const m=game.mission;
+  $("#app").innerHTML=`
+  <div class="screen active">
+    ${topHUD(`<button class="btn-sm btn-ghost" id="btnBack">← Map</button>`)}
+    <div class="card">
+      <h2>${m.emoji} ${m.title}</h2>
+      <p class="subtitle">${m.skill}</p>
+      <div class="lesson-visual">
+        <div style="font-size:1.1rem;margin-bottom:8px">📚 Mini Lesson</div>
+        ${escapeHtml(m.lesson)}
+        ${m.type==="placevalue"?renderBlocks(2,3,4):""}
+        ${m.type==="arrays"?`<div style="text-align:center;margin-top:8px"><div class="array" style="grid-template-columns:repeat(3,22px)">${'<div class="dot"></div>'.repeat(6)}</div><div>2 rows × 3 = 6</div></div>`:""}
+        ${m.type==="time"?renderClock(3,15):""}
+        ${m.type==="money"?`<div class="coins"><div class="coin q">Q 25¢</div><div class="coin d">D 10¢</div><div class="coin n">N 5¢</div><div class="coin p">P 1¢</div></div>`:""}
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;justify-content:center;margin:14px 0">
+        <div style="font-size:2.5rem">${state.avatar}</div>
+        <strong>VS</strong>
+        <div style="font-size:2.5rem">${game.villain.emoji}</div>
+      </div>
+      <p style="text-align:center;color:var(--muted)">Defeat <strong style="color:${game.villain.color}">${game.villain.name}</strong> with correct answers!</p>
+      <button class="btn-lg btn-pink" id="btnFight" style="width:100%;margin-top:8px">${m.boss?"⚔️ Boss Fight!":"Start Mission!"}</button>
+    </div>
+  </div>`;
+  bindChrome();
+  $("#btnBack").onclick=()=>{ game=null; render(); };
+  $("#btnFight").onclick=()=>{ game.phase="play"; nextQuestion(); render(); };
+  speak(m.lesson);
+}
+
+function nextQuestion(){
+  if(game.index>=game.total || game.villainHp<=0){
+    endMission(); return;
+  }
+  const gen = GENERATORS[game.mission.type];
+  game.current = gen(game.diff);
+  game.answered=false;
+  game.usedHint=false;
+  game.index++;
+  if(state.timerMode){
+    game.timeLeft = game.mission.boss?25:30;
+    clearInterval(game.timer);
+    game.timer=setInterval(()=>{
+      if(Date.now()<game.frozenUntil) return;
+      game.timeLeft--;
+      const el=$("#timerPill");
+      if(el) el.textContent="⏱️ "+game.timeLeft;
+      if(game.timeLeft<=0){ clearInterval(game.timer); if(!game.answered) onWrong(true); }
+    },1000);
+  }
+  speak(game.current.speak||game.current.prompt);
+}
+
+function renderPlay(){
+  const m=game.mission; const q=game.current; const v=game.villain;
+  $("#app").innerHTML=`
+  <div class="screen active battle-wrap">
+    ${topHUD(`<button class="btn-sm btn-ghost" id="btnQuit">✕</button>`)}
+    <div class="arena">
+      <div class="fighter">
+        <div class="avatar" style="filter:drop-shadow(0 0 8px ${state.color})">${state.avatar}</div>
+        <div class="name">${escapeHtml(state.name)}</div>
+        <div class="pill" style="justify-content:center;margin-top:4px">🔥 ${game.combo}</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="fighter" id="villainBox">
+        <div class="avatar">${v.emoji}</div>
+        <div class="name">${v.name}</div>
+        <div class="hpbar"><i id="hpFill" style="width:${game.villainHp}%"></i></div>
+      </div>
+    </div>
+    <div class="progress-track"><i style="width:${Math.round(((game.index-1)/game.total)*100)}%"></i></div>
+    <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);margin-bottom:6px">
+      <span>Q ${game.index}/${game.total}</span>
+      ${state.timerMode?`<span class="pill" id="timerPill">⏱️ ${game.timeLeft}</span>`:`<span></span>`}
+      <span>✅ ${game.correct} · ❌ ${game.wrong}</span>
+    </div>
+    <div class="powerups">
+      <button class="power" id="pwrHint" ${game.powers.hint?"":"disabled"}>🛡️ Hint (${game.powers.hint})</button>
+      <button class="power" id="pwrFreeze" ${game.powers.freeze?"":"disabled"}>❄️ Freeze (${game.powers.freeze})</button>
+      <button class="power" id="pwrBlast" ${game.powers.blast?"":"disabled"}>💥 Blast (${game.powers.blast})</button>
+    </div>
+    <div class="question-box" id="qbox">
+      <div class="qtext">${escapeHtml(q.prompt)}</div>
+      ${q.visual||""}
+      ${renderAnswerUI(q)}
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>`;
+  bindChrome();
+  $("#btnQuit").onclick=()=>{ clearInterval(game.timer); if(confirm("Leave mission and return to map?")){ game=null; render(); } };
+  $("#pwrHint").onclick=()=>usePower("hint");
+  $("#pwrFreeze").onclick=()=>usePower("freeze");
+  $("#pwrBlast").onclick=()=>usePower("blast");
+  wireAnswerUI(q);
+}
+
+function renderAnswerUI(q){
+  if(q.kind==="mc"){
+    return `<div class="choices">${q.choices.map((c,i)=>`<button class="choice" data-v="${escapeHtml(String(c))}">${escapeHtml(String(c))}</button>`).join("")}</div>`;
+  }
+  if(q.kind==="compare"){
+    return `<div class="choices" style="grid-template-columns:repeat(3,1fr)">
+      <button class="choice" data-v="<">&lt;</button>
+      <button class="choice" data-v="=">=</button>
+      <button class="choice" data-v=">">&gt;</button>
+    </div>`;
+  }
+  if(q.kind==="build"){
+    return `<div class="answer-display" id="buildVal">0</div>
+      <div id="buildBlocks" class="blocks" style="min-height:60px"></div>
+      <div class="row-btns">
+        <button class="btn-md" style="background:#ff6b6b;color:#fff" data-b="100">+100</button>
+        <button class="btn-md btn-blue" data-b="10">+10</button>
+        <button class="btn-md btn-green" data-b="1">+1</button>
+        <button class="btn-md btn-ghost" data-b="undo">↩︎ Undo</button>
+        <button class="btn-md btn-yellow" data-b="go">GO!</button>
+      </div>`;
+  }
+  // pad
+  return `<div class="answer-display" id="padVal"></div>
+    <div class="numpad">
+      ${[1,2,3,4,5,6,7,8,9,"⌫",0,"GO"].map(k=>`<button data-k="${k}">${k}</button>`).join("")}
+    </div>`;
+}
+function wireAnswerUI(q){
+  if(q.kind==="mc" || q.kind==="compare"){
+    $$(".choice").forEach(btn=>btn.addEventListener("click",()=>{
+      if(game.answered) return;
+      const val = btn.dataset.v;
+      const ok = String(val)===String(q.answer);
+      $$(".choice").forEach(b=>b.disabled=true);
+      if(ok){ btn.classList.add("correct"); onCorrect(); }
+      else { btn.classList.add("wrong");
+        $$(".choice").forEach(b=>{ if(String(b.dataset.v)===String(q.answer)) b.classList.add("correct"); });
+        onWrong(false);
+      }
+    }));
+    return;
+  }
+  if(q.kind==="build"){
+    const stack=[];
+    const draw=()=>{
+      const total=stack.reduce((s,v)=>s+v,0);
+      $("#buildVal").textContent=total;
+      const hh=stack.filter(v=>v===100).length, tt=stack.filter(v=>v===10).length, oo=stack.filter(v=>v===1).length;
+      $("#buildBlocks").outerHTML = renderBlocks(hh,tt,oo).replace('class="blocks"','id="buildBlocks" class="blocks" style="min-height:60px"');
+    };
+    $$("[data-b]").forEach(btn=>btn.addEventListener("click",()=>{
+      if(game.answered) return;
+      const b=btn.dataset.b; sfx("click");
+      if(b==="undo") stack.pop();
+      else if(b==="go"){ const total=stack.reduce((s,v)=>s+v,0); if(total===q.answer) onCorrect(); else onWrong(false); return; }
+      else { if(stack.length<30) stack.push(Number(b)); }
+      draw();
+    }));
+    return;
+  }
+  let buf="";
+  const disp=$("#padVal");
+  $$(".numpad button").forEach(btn=>btn.addEventListener("click",()=>{
+    if(game.answered) return;
+    const k=btn.dataset.k;
+    sfx("click");
+    if(k==="⌫") buf=buf.slice(0,-1);
+    else if(k==="GO"){
+      if(buf==="") return;
+      const val=Number(buf);
+      const ok = val===Number(q.answer);
+      if(ok) onCorrect(); else onWrong(false);
+      return;
+    } else {
+      if(buf.length>=4) return;
+      buf+=k;
+    }
+    disp.textContent=buf;
+  }));
+}
+
+function usePower(p){
+  if(game.answered || !game.powers[p]) return;
+  game.powers[p]--;
+  sfx("power");
+  if(p==="hint"){
+    game.usedHint=true;
+    $("#feedback").className="feedback good";
+    $("#feedback").textContent="🛡️ "+game.current.hint;
+    speak(game.current.hint);
+  } else if(p==="freeze"){
+    game.frozenUntil=Date.now()+8000;
+    toast("❄️ Time frozen for 8 seconds!");
+  } else if(p==="blast"){
+    game.villainHp=clamp(game.villainHp-15,0,100);
+    toast("💥 Power blast! Villain hit!");
+    $("#villainBox")?.animate([{filter:"brightness(2)"},{filter:"none"}],{duration:300});
+    if(game.villainHp<=0){ endMission(); return; }
+  }
+  // re-render powers counts without full wipe of answer
+  renderPlay();
+}
+
+function onCorrect(){
+  if(game.answered) return;
+  game.answered=true;
+  clearInterval(game.timer);
+  game.correct++;
+  game.combo++;
+  game.maxCombo=Math.max(game.maxCombo,game.combo);
+  if(game.combo>=5) unlockBadge("combo5");
+  if(game.combo>=10) unlockBadge("combo10");
+  // adaptive
+  if(game.combo>=3) game.diff=clamp(game.diff+1,0,2);
+  const dmg = 12 + Math.min(game.combo,5)*2 + (game.mission.boss?0:2);
+  game.villainHp=clamp(game.villainHp-dmg,0,100);
+  sfx("correct");
+  $("#feedback").className="feedback good";
+  const msgs=["Awesome!","Super strike!","Math power!","Yes!","Hero hit!","Fantastic!"];
+  $("#feedback").textContent="✅ "+pick(msgs)+(game.combo>1?` · 🔥 x${game.combo}`:"");
+  $("#villainBox")?.animate([{transform:"translateX(0)"},{transform:"translateX(6px)"},{transform:"translateX(-6px)"},{transform:"translateX(0)"}],{duration:280});
+  setTimeout(()=>{
+    if(game.villainHp<=0 || game.index>=game.total) endMission();
+    else { nextQuestion(); render(); }
+  }, 850);
+}
+
+function onWrong(timeout){
+  if(game.answered) return;
+  game.answered=true;
+  clearInterval(game.timer);
+  game.wrong++;
+  game.combo=0;
+  game.diff=clamp(game.diff-1,0,2);
+  sfx("wrong");
+  $("#feedback").className="feedback bad";
+  $("#feedback").innerHTML = `${timeout?"⏰ Time's up! ":"Not quite — "}💡 ${escapeHtml(game.current.hint)}<br><span style="color:var(--accent2)">Answer: ${escapeHtml(String(game.current.answer))}</span>`;
+  speak("Hint: "+game.current.hint+". The answer is "+game.current.answer);
+  setTimeout(()=>{
+    if(game.index>=game.total) endMission();
+    else { nextQuestion(); render(); }
+  }, 2200);
+}
+
+function endMission(){
+  clearInterval(game.timer);
+  game.phase="result";
+  const m=game.mission;
+  const prog=missionProgress(m.id);
+  prog.attempts++;
+  prog.correct+=game.correct;
+  prog.wrong+=game.wrong;
+  const ratio = game.correct / Math.max(1, game.correct+game.wrong);
+  let stars = ratio>=0.9?3:ratio>=0.7?2:ratio>=0.45?1:0;
+  if(game.villainHp>0 && stars>1) stars=Math.max(1,stars-1); // didn't finish villain
+  if(game.villainHp<=0) stars=Math.max(stars,2);
+  if(ratio>=0.95 && game.wrong===0) stars=3;
+  prog.bestStars=Math.max(prog.bestStars,stars);
+  const won = stars>=1 || game.villainHp<=0;
+  if(won){
+    prog.completed=true;
+    state.stars += stars;
+    addXp(20 + stars*15 + game.correct*3 + (m.boss?40:0));
+    if(stars>=1) unlockBadge("first_star");
+    if(completedCount()>=3) unlockBadge("mission3");
+    if(completedCount()>=9) unlockBadge("all_missions");
+    if(m.boss) unlockBadge("boss");
+    if(game.wrong===0 && game.correct>0) unlockBadge("perfect");
+    if(m.id==="money") unlockBadge("money");
+    if(m.id==="time") unlockBadge("time");
+    if(m.id==="placevalue") unlockBadge("place");
+  }
+  save();
+  game.result={stars, won, ratio};
+  if(won){ sfx("win"); confetti(m.boss?60:35); }
+  render();
+}
+
+function renderResult(){
+  const m=game.mission; const r=game.result;
+  const starStr="⭐".repeat(r.stars)+"☆".repeat(3-r.stars);
+  $("#app").innerHTML=`
+  <div class="screen active">
+    ${topHUD()}
+    <div class="card" style="text-align:center">
+      <h2>${r.won?(m.boss?"🏆 Boss Defeated!":"🎉 Mission Complete!"):"💪 Keep Training!"}</h2>
+      <div style="font-size:2.4rem;margin:10px 0">${starStr}</div>
+      <p class="subtitle">${r.won?`You stopped ${game.villain.name}!`:`You can retry anytime — heroes practice!`}</p>
+      <div class="stat-row"><span>Correct</span><span>${game.correct}</span></div>
+      <div class="stat-row"><span>Misses</span><span>${game.wrong}</span></div>
+      <div class="stat-row"><span>Best combo</span><span>🔥 ${game.maxCombo}</span></div>
+      <div class="stat-row"><span>Accuracy</span><span>${Math.round(r.ratio*100)}%</span></div>
+      <div class="row-btns">
+        <button class="btn-lg btn-yellow" id="btnRetry">Retry</button>
+        <button class="btn-lg btn-green" id="btnMap">City Map</button>
+      </div>
+    </div>
+  </div>`;
+  bindChrome();
+  $("#btnRetry").onclick=()=>startMission(m);
+  $("#btnMap").onclick=()=>{ game=null; render(); };
+}
+
+function renderBadges(){
+  $("#app").innerHTML=`
+  <div class="screen active">
+    ${topHUD(`<button class="btn-sm btn-ghost" id="btnBack">← Map</button>`)}
+    <div class="card">
+      <h2>🏆 Trophy Room</h2>
+      <p class="subtitle">Badges you've earned on your hero journey.</p>
+      <div class="badge-grid">
+        ${BADGES.map(b=>{
+          const has=state.badges.includes(b.id);
+          return `<div class="badge ${has?"":"locked"}"><div class="ico">${b.emoji}</div><div class="lbl">${b.name}</div></div>`;
+        }).join("")}
+      </div>
+    </div>
+  </div>`;
+  bindChrome();
+  $("#btnBack").onclick=()=>{ game=null; render(); };
+}
+
+function renderParent(){
+  if(game.gate){
+    const a=rand(6,12), b=rand(6,12);
+    game.gateAns=a+b;
+    $("#app").innerHTML=`
+    <div class="screen active">
+      ${topHUD(`<button class="btn-sm btn-ghost" id="btnBack">← Map</button>`)}
+      <div class="card parent-gate">
+        <h2>👨‍👦 Parent Corner</h2>
+        <p class="subtitle">Hold the button, or solve this quick check:</p>
+        <div style="font-size:1.6rem;font-weight:900">${a} + ${b} = ?</div>
+        <input type="text" id="gateIn" inputmode="numeric" style="max-width:160px;text-align:center" />
+        <button class="btn-md btn-blue" id="gateGo">Unlock</button>
+        <button class="btn-md btn-ghost" id="holdBtn" style="margin-top:8px;width:200px">Hold 2 seconds…</button>
+      </div>
+    </div>`;
+    bindChrome();
+    $("#btnBack").onclick=()=>{ game=null; render(); };
+    $("#gateGo").onclick=()=>{
+      if(Number($("#gateIn").value)===game.gateAns){ unlockBadge("parent"); game.gate=false; render(); }
+      else toast("Not quite — try again");
+    };
+    let holdT=null;
+    const hb=$("#holdBtn");
+    const start=()=>{ holdT=setTimeout(()=>{ unlockBadge("parent"); game.gate=false; render(); },2000); hb.textContent="Keep holding…"; };
+    const end=()=>{ clearTimeout(holdT); hb.textContent="Hold 2 seconds…"; };
+    hb.addEventListener("mousedown",start); hb.addEventListener("mouseup",end); hb.addEventListener("mouseleave",end);
+    hb.addEventListener("touchstart",e=>{e.preventDefault();start();},{passive:false});
+    hb.addEventListener("touchend",end);
+    return;
+  }
+  const rows = MISSIONS.filter(m=>!m.boss).map(m=>{
+    const p=missionProgress(m.id);
+    const tot=p.correct+p.wrong;
+    const acc=tot?Math.round(p.correct/tot*100):null;
+    return `<div class="stat-row"><span>${m.emoji} ${m.skill}</span><span>${acc==null?"—":acc+"%"} · ★${p.bestStars}</span></div>`;
+  }).join("");
+  $("#app").innerHTML=`
+  <div class="screen active">
+    ${topHUD(`<button class="btn-sm btn-ghost" id="btnBack">← Map</button>`)}
+    <div class="card">
+      <h2>👨‍👦 Parent Corner</h2>
+      <p class="subtitle">Accuracy by skill for ${escapeHtml(state.name)}. Data stays on this device.</p>
+      ${rows}
+      <div class="stat-row"><span>Level / Stars</span><span>Lv ${state.level} · ⭐ ${state.stars}</span></div>
+      <div class="row-btns" style="margin-top:16px">
+        <button class="btn-md btn-ghost" id="btnReset">Reset all progress</button>
+      </div>
+    </div>
+  </div>`;
+  bindChrome();
+  $("#btnBack").onclick=()=>{ game=null; render(); };
+  $("#btnReset").onclick=()=>{
+    if(confirm("Erase all progress on this device?")){
+      const muted=state.muted, speak=state.speak;
+      state=structuredClone(DEFAULT); state.muted=muted; state.speak=speak; save(); game=null; render();
+    }
+  };
+}
+
+// keyboard support for number pad / choices
+document.addEventListener("keydown",e=>{
+  if(!game || game.phase!=="play" || game.answered) return;
+  if(/^[0-9]$/.test(e.key)){ const b=$(`.numpad button[data-k="${e.key}"]`); if(b) b.click(); }
+  else if(e.key==="Backspace"){ const b=$(`.numpad button[data-k="⌫"]`); if(b){ e.preventDefault(); b.click(); } }
+  else if(e.key==="Enter"){ const b=$(`.numpad button[data-k="GO"]`)||$(`[data-b="go"]`); if(b) b.click(); }
+});
+// offline support (service worker; ignored when opened as a file)
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+// boot
+render();
+// expose for tests
+window.HeroMath = {
+  get state(){ return state; },
+  setState(s){ Object.assign(state,s); save(); },
+  MISSIONS, GENERATORS, BADGES,
+  genAdd20, genAddSub100, genPlaceValue, genSkipCount, genCompare, genTime, genMoney, genWord, genArrays, genBoss, makeChoices,
+  startMission, nextQuestion, isUnlocked, missionProgress, completedCount,
+  load, save, reset(){ state=structuredClone(DEFAULT); save(); game=null; render(); }
+};
+})();
+</script>
+</body>
+</html>
